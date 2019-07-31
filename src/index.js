@@ -26,22 +26,44 @@ const CHAPTER_CONTENT_6 = `Commercial Space Economy ...`;
 // Chart Constants & Stuff
 const CHART_MARGINS = {
     top: 20,
-    right: 20,
+    right: 50,
     bottom: 30,
     left: 50,
 };
 
 const CHART_SECTION_D3 = d3.select(".chart_section");
-const CHART_HEIGHT = CHART_SECTION_D3.node().getBoundingClientRect().height - CHART_MARGINS.top - CHART_MARGINS.bottom;
-const CHART_WIDTH  = CHART_SECTION_D3.node().getBoundingClientRect().width - CHART_MARGINS.left - CHART_MARGINS.right;
+const CHART_SECTION_HEIGHT = CHART_SECTION_D3.node().getBoundingClientRect().height;
+const CHART_SECTION_WIDTH = CHART_SECTION_D3.node().getBoundingClientRect().width;
+const CHART_HEIGHT = CHART_SECTION_HEIGHT - CHART_MARGINS.top - CHART_MARGINS.bottom;
+const CHART_WIDTH  = CHART_SECTION_WIDTH - CHART_MARGINS.left - CHART_MARGINS.right;
 
 const CHART = d3.select(".chart")
-    .attr("width", CHART_WIDTH)
-    .attr("height", CHART_HEIGHT);
+    .attr("width", CHART_SECTION_WIDTH)
+    .attr("height", CHART_SECTION_HEIGHT);
 
-let X_fxn = d3.scaleLinear().domain([1959, 2016]).range([0, CHART_WIDTH]);
-let Y_fxn = d3.scaleLinear().domain([0, 0.8]).range([CHART_HEIGHT, 0]);
+const X_fxn = d3.scaleLinear().domain([1959, 2016]).range([0, CHART_WIDTH]);
+const Y_fxn = d3.scaleLinear().domain([0, 0.8]).range([CHART_HEIGHT, 0]);
+
+const line_fxn = d3.line()
+    .x(d => X_fxn(d.Year) + CHART_MARGINS.left)
+    .y(d => Y_fxn(d.NASA_BUDGET_OVER_GDP_IN_PERCENT) + CHART_MARGINS.top);
 
 function setup_chapter_1_chart(data) {
-    X_fxn(3);
+    CHART.append("path").data([data]).attr("class", "line").attr("d", line_fxn);
+    CHART.append("g").attr("class", "x-axis")
+        .attr("transform", `translate(${CHART_MARGINS.left}, ${CHART_HEIGHT + CHART_MARGINS.top})`)
+        .call(d3.axisBottom(X_fxn)
+            .tickFormat(d3.format("d")));
+    CHART.append("g").attr("class", "y-axis").attr("transform", `translate(${CHART_MARGINS.left}, ${CHART_MARGINS.top})`).call(d3.axisLeft(Y_fxn));
+    CHART.append("text")             
+      .attr("transform", `translate(${CHART_MARGINS.left + CHART_WIDTH/2}, ${CHART_MARGINS.top + CHART_HEIGHT + CHART_MARGINS.bottom})`)
+      .style("text-anchor", "middle")
+      .text("Year");
+    CHART.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x", 0 - CHART_MARGINS.top - (CHART_HEIGHT / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("NASA Budget over National GDP in %"); 
 }
