@@ -5,6 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
 
     <title>Space Exploration Visualization</title>
 
@@ -15,14 +16,64 @@
         
         body {
           font-family: Arial, Helvetica, sans-serif;
+          background-color: whitesmoke;
         }
-        
+
+        :root {
+          --accent-color: #E8336D;
+        }
+
+        svg {
+          background-color: white;
+          font-family: 'Lato';
+        }
+
+        path.line {
+          fill: none;
+          stroke: lightgrey;
+          stroke-width: 1px;
+        }
+
+        .annotation path {
+          stroke: var(--accent-color);
+          fill: none;
+        }
+
+        .annotation path.connector-arrow, 
+        .title text, .annotation text,
+        .annotation.callout.circle .annotation-subject path{
+          fill: var(--accent-color);
+        }
+        .annotation-note-bg {
+          fill: rgba(255, 255, 255, 0);
+        }
+      
+        .annotation-note-title {
+          font-weight: bold;
+        }
+      
+        .annotation.xythreshold {
+          cursor: move;
+        }
+      
+        .hidden {
+          display: none;
+        }
+      
+        text.hover {
+          font-size: .7em;
+        }
+      
+        text.title {
+          font-size: 1.1em;
+        }
+
         /* Style the header */
         header {
           background-color: #666;
           padding: 30px;
           text-align: center;
-          font-size: 35px;
+          font-size: 20px;
           color: white;
         }
         
@@ -56,14 +107,6 @@
           padding: 10px;
         }
         
-        /* Style the footer */
-        footer {
-          background-color: #777;
-          padding: 10px;
-          text-align: center;
-          color: white;
-        }
-        
         /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
         @media (max-width: 600px) {
           section {
@@ -71,28 +114,63 @@
             flex-direction: column;
           }
         }
+
+        section svg {
+          -webkit-flex: 1;
+          -ms-flex: 1;
+          flex: 1;
+          padding: 0;
+        }
     </style>
 </head>
 
-<!--Scripts-->
-<script src="scripts/d3.v3.min.js"></script>
-<script src="scripts/d3-annotation.min.js"></script>
-<script src="scripts/marked.min.js"></script>
-<script src="scripts/jquery-3.4.1.min.js"></script>
-<script src="src/index.js"></script>
-
 <body onload="base_init()">
+    <header>
+        <div id="header_content"></div>
+    </header>
+
+    <section>
+        <nav>
+          <ul>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 1);">1. The Birth of NASA</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 2);">2. The First (Soviet) Man in Space</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 3);">3. "We choose to go to the Moon..."</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 4);">4. Apollo Missions</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 5);">5. Declining Interest in Space</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 6);">6. The Rise of the Commerical Space Economy</a></li>
+          </ul>
+        </nav>
+        
+        <article>
+          <div id="chapter_title"></div>
+          <div id="chapter_content"></div>
+        </article>
+    </section>
+
+    <section class="chart_section">
+      <svg class="chart" height=415></svg>
+    </section>
+
+    <!--Scripts-->
+    <script src="scripts/d3.v5.min.js"></script>
+    <script src="scripts/d3-annotation.min.js"></script>
+    <script src="scripts/marked.min.js"></script>
+    <script src="scripts/jquery-3.4.1.min.js"></script>
+    <script src="src/index.js"></script>
+
     <script>
         async function base_init() {
             const data = await d3.csv("data/space_data.csv");
             document.getElementById("header_content").innerHTML = marked(HEADER_CONTENT);
 
-            load_chapter_1();
+            load_chapter_1(data);
         }
 
-        function load_chapter_1() {
+        function load_chapter_1(data) {
             document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_1);
             document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_1);
+
+            setup_chapter_1_chart(data);
         }
 
         function load_chapter_2() {
@@ -140,31 +218,5 @@
             return false;
         }
     </script>
-
-    <header>
-        <div id="header_content"></div>
-    </header>
-
-    <section>
-        <nav>
-          <ul>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 1);">1. The Birth of NASA</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 2);">2. The First (Soviet) Man in Space</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 3);">3. "We choose to go to the Moon..."</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 4);">4. Apollo Missions</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 5);">5. Declining Interest in Space</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 6);">6. The Rise of the Commerical Space Economy</a></li>
-          </ul>
-        </nav>
-        
-        <article>
-          <div id="chapter_title"></div>
-          <div id="chapter_content"></div>
-        </article>
-    </section>
-
-    <section>
-
-    </section>
 </body>
 </html>
