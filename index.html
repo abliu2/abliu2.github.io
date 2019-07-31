@@ -160,7 +160,7 @@
 
     <script>
         async function base_init() {
-            const data = await d3.csv("data/space_data.csv");
+            const data = await d3.csv("https://abliu2.github.io/data/space_data.csv");
             document.getElementById("header_content").innerHTML = marked(HEADER_CONTENT);
 
             load_chapter_1(data);
