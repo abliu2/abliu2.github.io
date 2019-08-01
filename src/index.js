@@ -232,12 +232,28 @@ function setup_chapter_2_chart(data) {
                 .style("opacity", 1)
             annotation.type.a.selectAll("g.annotation-subject")
                 .style("opacity", 1);
+
+            if (parseInt(annotation.data.Year) === 1962) {
+                d3.select("#moon_speech_video").attr("height", 200).attr("width", 200)
+                  .style("transform", `translate(${CHART_WIDTH - 200}px, 0px)`);
+
+                let video = document.getElementById("moon_speech_video");
+                let playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {}).catch(error => {});
+                }
+            }
         })
         .on("subjectout", (annotation) => {
             annotation.type.a.selectAll("g.annotation-connector, g.annotation-note")
                 .style("opacity", 0);
             annotation.type.a.selectAll("g.annotation-subject")
                 .style("opacity", 0);
+            
+            d3.select("#moon_speech_video").attr("height", 0).attr("width", 0);
+
+            let video = document.getElementById("moon_speech_video");
+            video.pause();
         });
     
     CHART.append("g").attr("class", "chapter-2-annotation").call(makeAnnotations);

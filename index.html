@@ -144,6 +144,10 @@
           flex: 1;
           padding: 0;
         }
+
+        #moon_speech_video {
+          position: absolute;
+        }
     </style>
 </head>
 
@@ -169,6 +173,9 @@
     </section>
 
     <section class="chart_section">
+      <video id="moon_speech_video" loop preload="none" height=0 width=0>
+        <source src="https://abliu2.github.io/data/MoonSpeech.mp4" type="video/mp4">
+      </video>
       <svg class="chart" height=410></svg>
     </section>
 
