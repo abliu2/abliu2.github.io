@@ -3,19 +3,32 @@ const HEADER_CONTENT = `
 A history of NASA and how the public interest in space exploration has shifted over time.
 `;
 
-const CHAPTER_TITLE_1 = `# Chapter 1: The Birth of the Space Race`;
-const CHAPTER_TITLE_2 = `# Chapter 2: The Apollo Missions and the Decade of Innovation`;
-const CHAPTER_TITLE_3 = `# Chapter 3: Declining Interest in Space`;
-const CHAPTER_TITLE_4 = `# Chapter 4: The Rise of the Commercial Space Economy`;
+const CHAPTER_TITLE_1 = `# Chapter 1: The Birth of the Space Race (1957-1961)`;
+const CHAPTER_TITLE_2 = `# Chapter 2: The Apollo Missions and the Decade of Innovation (1961-1972)`;
+const CHAPTER_TITLE_3 = `# Chapter 3: Declining Interest in Space (1972-2005)`;
+const CHAPTER_TITLE_4 = `# Chapter 4: The Rise of the Commercial Space Economy (2005-Present)`;
 
 // Chapter Content
-const CHAPTER_CONTENT_1 = `Space Race ...`;
+const CHAPTER_CONTENT_1 =
+`After the end of World War II, a new conflict known as the Cold War arose between two superpowers: the United States and the Soviet Union. ` +
+`Naturally, space exploration became a facet for competition. ` +
+`On October 4, 1957, the Soviet Union launched the first artificial satellite (Sputnik) into space. This demonstration raised many questions about surveillance and space-based intelligence gathering. ` +
+`Subsequently in 1958, Dwight D. Eisenhower signed an order to create the National Aeronautics and Space Administration (NASA).`;
 
-const CHAPTER_CONTENT_2 = `Apollo ...`;
+const CHAPTER_CONTENT_2 = `As the Space Race began to ramp up, JFK made a bold statement that the US would land on the moon by the end of the 1960s. ` +
+`From 1961 to 1964, NASA's budget increased by almost 500%. During the Apollo era of 1961 - 1971, NASA conducted 16 unmanned mission and 12 manned missions in and outside Earth's low orbit.` +
+`The Apollo Missions helped advance technologies not just related to spaceflight, but also computers, telecommunications, and avionics. ` +
+`As a result the Apollo missions romanticized space flight for generations.`;
 
-const CHAPTER_CONTENT_3 = `Declining Interest in Space ...`;
+const CHAPTER_CONTENT_3 = `After the Apollo Missions, NASA failed to develop a long-term marketing strategy to the public for interest in space. ` +
+`As the novelty of the initial moon landings wore off, NASA struggled to keep the public interested in its other exploits, such as the unmanned robotics missions exploring Mars, Venus, and even beyond the solar system. ` +
+`As a result, NASA's budget as a proportion of the federal budget and GDP dropped and flatline in the following decades. ` +
+`But, maybe the main investments of the space economy are shifting from the government organizations to the private sector. Let's take a look in Chapter 4.`;
 
-const CHAPTER_CONTENT_4 = `Commercial Space Economy ...`;
+const CHAPTER_CONTENT_4 = `The ending of the Space Shuttle program in 2011 seemingly marked the end of centralized & government-sponsored space exploration. ` +
+`However, commercial investors in both the public and private sector have taken the opportunity to be the primary driver in space exploration. ` + 
+`Companies like SpaceX and Blue Origin have recently been working on products that range from reusable launch components to space tourism to even space colonization. ` +
+`Although the budget for NASA has pretty must stagnated over the past few decades, public interest is now shifting towards a decentralized space economy.`;
 
 // Current Chapter
 let CURRENT_CHAPTER = -1;
@@ -80,8 +93,8 @@ function clear_chart() {
     CHART.selectAll("g.chapter-4-annotation").remove();
     CHART.selectAll("g.chapter-2-fixed-annotation").remove();
     CHART.selectAll("g.chapter-4-fixed-annotation").remove();
-    CHART.selectAll("chapter-4-y-axis").remove();
-    CHART.selectAll("chapter-4-y-label").remove();
+    CHART.selectAll("g.chapter-4-y-axis").remove();
+    CHART.selectAll("g.chapter-4-y-label").remove();
     CHART.selectAll("path.chapter-4-nasa-line").remove();
     CHART.selectAll("path.chapter-4-private-line").remove();
 }
