@@ -28,10 +28,28 @@
           font-family: 'Lato';
         }
 
-        path.line {
+        path.chapter-1-line {
           fill: none;
           stroke: black;
-          stroke-width: 1px;
+          stroke-width: 2px;
+        }
+
+        path.chapter-2-line {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
+        }
+
+        path.chapter-3-line {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
+        }
+
+        path.chapter-4-line {
+          fill: none;
+          stroke: black;
+          stroke-width: 2px;
         }
 
         .annotation path {
@@ -44,6 +62,11 @@
         .annotation.callout.circle .annotation-subject path{
           fill: var(--accent-color);
         }
+
+        .annotation.callout.circle .annotation-subject {
+          opacity: 0;
+        }
+
         .annotation-note-bg {
           fill: rgba(255, 255, 255, 0);
         }
@@ -132,12 +155,10 @@
     <section>
         <nav>
           <ul>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 1);">1. The Birth of NASA</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 2);">2. The First (Soviet) Man in Space</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 3);">3. "We choose to go to the Moon..."</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 4);">4. Apollo Missions</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 5);">5. Declining Interest in Space</a></li>
-            <li><a href="" onclick="return chapter_clicked_handler(this, event, 6);">6. The Rise of the Commerical Space Economy</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 1);">1. The Birth of the Space Race</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 2);">2. Apollo Missions</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 3);">3. Declining Interest in Space</a></li>
+            <li><a href="" onclick="return chapter_clicked_handler(this, event, 4);">4. The Rise of the Commerical Space Economy</a></li>
           </ul>
         </nav>
         
@@ -160,59 +181,81 @@
 
     <script>
         async function base_init() {
-            const data = await d3.csv("https://abliu2.github.io/data/space_data.csv");
+            SPACE_DATA = await d3.csv("https://abliu2.github.io/data/space_data.csv");
             document.getElementById("header_content").innerHTML = marked(HEADER_CONTENT);
 
-            load_chapter_1(data);
+            load_chapter_1(SPACE_DATA);
         }
 
         function load_chapter_1(data) {
             document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_1);
             document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_1);
 
-            setup_chapter_1_chart(data);
+            if (CURRENT_CHAPTER !== 1) {
+              clear_chart();
+              setup_chapter_1_chart(data.filter(d => d.Year <= 1961));
+              setup_chapter_1_transitions();
+            }
+
+            CURRENT_CHAPTER = 1;
         }
 
-        function load_chapter_2() {
+        function load_chapter_2(data) {
             document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_2);
             document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_2);
+
+            if (CURRENT_CHAPTER !== 2) {
+              clear_chart();
+              setup_chapter_1_chart(data.filter(d => d.Year <= 1961));
+              setup_chapter_2_chart(data.filter(d => d.Year >= 1961 && d.Year <= 1972));
+              setup_chapter_2_transitions();
+            }
+
+            CURRENT_CHAPTER = 2;
         }
 
-        function load_chapter_3() {
+        function load_chapter_3(data) {
             document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_3);
             document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_3);
+
+            if (CURRENT_CHAPTER !== 3) {
+              clear_chart();
+              setup_chapter_1_chart(data.filter(d => d.Year <= 1961));
+              setup_chapter_2_chart(data.filter(d => d.Year >= 1961 && d.Year <= 1972));
+              setup_chapter_3_chart(data.filter(d => d.Year >= 1972 && d.Year <= 2005));
+              setup_chapter_3_transitions();
+            }
+
+            CURRENT_CHAPTER = 3;
         }
 
-        function load_chapter_4() {
+        function load_chapter_4(data) {
             document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_4);
             document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_4);
-        }
 
-        function load_chapter_5() {
-            document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_5);
-            document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_5);
-        }
-        
-        function load_chapter_6() {
-            document.getElementById("chapter_title").innerHTML = marked(CHAPTER_TITLE_6);
-            document.getElementById("chapter_content").innerHTML = marked(CHAPTER_CONTENT_6);
+            if (CURRENT_CHAPTER !== 4) {
+              clear_chart();
+              setup_chapter_1_chart(data.filter(d => d.Year <= 1961));
+              setup_chapter_2_chart(data.filter(d => d.Year >= 1961 && d.Year <= 1972));
+              setup_chapter_3_chart(data.filter(d => d.Year >= 1972 && d.Year <= 2005));
+              setup_chapter_4_chart(data.filter(d => d.Year >= 2005));
+              setup_chapter_4_transitions();
+            }
+
+            CURRENT_CHAPTER = 4;
         }
 
         function chapter_clicked_handler(self, e, chapter) {
             e.preventDefault();
 
             if (chapter === 1) {
-                load_chapter_1();
+                load_chapter_1(SPACE_DATA);
             } else if (chapter === 2) {
-                load_chapter_2();
+                load_chapter_2(SPACE_DATA);
             } else if (chapter === 3) {
-                load_chapter_3();
+                load_chapter_3(SPACE_DATA);
             } else if (chapter === 4) {
-                load_chapter_4();
-            } else if (chapter === 5) {
-                load_chapter_5();
-            } else if (chapter === 6) {
-                load_chapter_6();
+                load_chapter_4(SPACE_DATA);
             }
 
             return false;
