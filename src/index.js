@@ -79,6 +79,11 @@ function clear_chart() {
     CHART.selectAll("g.chapter-3-annotation").remove();
     CHART.selectAll("g.chapter-4-annotation").remove();
     CHART.selectAll("g.chapter-2-fixed-annotation").remove();
+    CHART.selectAll("g.chapter-4-fixed-annotation").remove();
+    CHART.selectAll("chapter-4-y-axis").remove();
+    CHART.selectAll("chapter-4-y-label").remove();
+    CHART.selectAll("path.chapter-4-nasa-line").remove();
+    CHART.selectAll("path.chapter-4-private-line").remove();
 }
 
 function setup_chapter_1_transitions() {
@@ -140,6 +145,32 @@ function setup_chapter_4_transitions() {
         path.transition()
         .duration(1000)
         .attrTween("stroke-dasharray", tweenDash);
+    });
+    CHART.select("path.chapter-4-nasa-line").call((path) => {
+        const dash_length = 12;
+        const total_length = path.node().getTotalLength();
+        const dash_count = Math.ceil( total_length / dash_length );
+        const new_dashes = new Array(dash_count).join( "9, 3 " );
+        const dash_array  = new_dashes + " 0, " + total_length;
+
+        path
+            .attr("stroke-dashoffset", total_length)
+            .attr("stroke-dasharray", dash_array)
+            .transition().duration(3000).ease(d3.easeLinear)
+            .attr("stroke-dashoffset", 0);
+    });
+    CHART.select("path.chapter-4-private-line").call((path) => {
+        const dash_length = 12;
+        const total_length = path.node().getTotalLength();
+        const dash_count = Math.ceil( total_length / dash_length );
+        const new_dashes = new Array(dash_count).join( "9, 3 " );
+        const dash_array  = new_dashes + " 0, " + total_length;
+
+        path
+            .attr("stroke-dashoffset", total_length)
+            .attr("stroke-dasharray", dash_array)
+            .transition().duration(3000).ease(d3.easeLinear)
+            .attr("stroke-dashoffset", 0);
     });
 
     CHART.select("g.chapter-4-annotation").selectAll("g.annotation-subject, g.annotation-connector, g.annotation-note").each(function(d, i) {
@@ -300,6 +331,15 @@ function setup_chapter_2_chart(data) {
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {}).catch(error => {});
                 }
+            } else if (annotation.className === "apollo_11_badge") {
+                d3.select("#apollo_11_video").attr("height", 300).attr("width", 400)
+                  .style("transform", `translate(${CHART_WIDTH - 400}px, 0px)`);
+
+                let video = document.getElementById("apollo_11_video");
+                let playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {}).catch(error => {});
+                }
             }
         })
         .on("subjectout", (annotation) => {
@@ -307,6 +347,11 @@ function setup_chapter_2_chart(data) {
                 d3.select("#moon_speech_video").attr("height", 0).attr("width", 0);
 
                 let video = document.getElementById("moon_speech_video");
+                video.pause();
+            } else if (annotation.className === "apollo_11_badge") {
+                d3.select("#apollo_11_video").attr("height", 0).attr("width", 0);
+
+                let video = document.getElementById("apollo_11_video");
                 video.pause();
             }
         });
@@ -363,6 +408,31 @@ function setup_chapter_3_chart(data) {
 }
 
 function setup_chapter_4_chart(data) {
+    const data2 = data.filter(d => Boolean(d.NOMINAL_NASA_BUDGET_IN_2017_BILLIONS) && Boolean(d.COMMERCIAL_SPACE_PRODS_AND_SERVICES_IN_2017_BILLIONS));
+
+    const X2_fxn = d3.scaleLinear().domain([1959, 2016]).range([0, CHART_WIDTH]);
+    const Y2_fxn = d3.scaleLinear().domain([0, 130]).range([CHART_HEIGHT, 0]);
+    const line2_nasa_fxn = d3.line()
+        .x(d => X2_fxn(d.Year) + CHART_MARGINS.left)
+        .y(d => Y2_fxn(d.NOMINAL_NASA_BUDGET_IN_2017_BILLIONS) + CHART_MARGINS.top);
+    const line2_private_fxn = d3.line()
+        .x(d => X2_fxn(d.Year) + CHART_MARGINS.left)
+        .y(d => Y2_fxn(d.COMMERCIAL_SPACE_PRODS_AND_SERVICES_IN_2017_BILLIONS) + CHART_MARGINS.top);
+
+    CHART.append("g").attr("class", "chapter-4-y-axis")
+        .attr("transform", `translate(${CHART_MARGINS.left + CHART_WIDTH}, ${CHART_MARGINS.top})`)
+        .call(d3.axisRight(Y2_fxn));
+    CHART.append("text").attr("class", "chapter-4-y-label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", CHART_MARGINS.left + CHART_WIDTH + CHART_MARGINS.right - 20)
+      .attr("x", 0 - CHART_MARGINS.top - (CHART_HEIGHT / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Spending in Billions USD");
+    CHART.append("path").data([data2]).attr("class", "chapter-4-nasa-line").attr("d", line2_nasa_fxn);
+    CHART.append("path").data([data2]).attr("class", "chapter-4-private-line").attr("d", line2_private_fxn);
+
+    // Regular Line
     CHART.append("path").data([data]).attr("class", "chapter-4-line").attr("d", line_fxn);
 
     const labels = data.map(entry => ({
@@ -404,6 +474,38 @@ function setup_chapter_4_chart(data) {
                 .style("opacity", 0);
         });
     
+    // Fixed annotations
+    const fixed_labels = [{
+        data: {
+            Year: 2005,
+            Value: 15.602,
+        },
+        note: {
+            label: "",
+            title: "NASA Spending"
+        },
+        className: "nasa_spending_label",
+    },{
+        data: {
+            Year: 2005,
+            Value: 58.41,
+        },
+        note: {
+            label: "",
+            title: "Private Sector Space Spending"
+        },
+        className: "private_spending_label",
+    }];
+
+    const makeFixedAnnotations = d3.annotation()
+        .type(d3.annotationLabel)
+        .accessors({
+            x: d => (X2_fxn(d.Year) + CHART_MARGINS.left),
+            y: d => (Y2_fxn(d.Value) + CHART_MARGINS.top),
+        })
+        .annotations(fixed_labels);
+
     CHART.append("g").attr("class", "chapter-4-annotation").call(makeAnnotations);
+    CHART.append("g").attr("class", "chapter-4-fixed-annotation").call(makeFixedAnnotations);
     CHART.select("g.chapter-4-annotation").selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
 }
