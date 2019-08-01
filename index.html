@@ -52,13 +52,37 @@
           stroke-width: 2px;
         }
 
-        .annotation path {
+        .annotation.callout.circle path {
           stroke: var(--accent-color);
           fill: none;
         }
 
+        .annotation.callout.circle text {
+          fill: var(--accent-color);
+        }
+
+        .annotation.callout.xythreshold path {
+          stroke: #00796B;
+          stroke-width: 2px;
+          stroke-dasharray: 1,3;
+          fill: none;
+        }
+
+        .annotation.callout.xythreshold text {
+          fill: #00796B;
+        }
+
+        .annotation.badge path {
+          stroke: #00796B;
+          fill: none;
+        }
+
+        .annotation.badge text {
+          fill: #00796B;
+        }
+
         .annotation path.connector-arrow, 
-        .title text, .annotation text,
+        .title text,
         .annotation.callout.circle .annotation-subject path{
           fill: var(--accent-color);
         }
@@ -148,6 +172,10 @@
         #moon_speech_video {
           position: absolute;
         }
+
+        #apollo_11_video {
+          position: absolute;
+        }
     </style>
 </head>
 
@@ -174,7 +202,10 @@
 
     <section class="chart_section">
       <video id="moon_speech_video" loop preload="none" height=0 width=0>
-        <source src="https://abliu2.github.io/data/MoonSpeech.mp4" type="video/mp4">
+        <source src="https://abliu2.github.io/data/MoonSpeech.mp4" type="video/mp4" />
+      </video>
+      <video id="apollo_11_video" loop preload="none" height=0 width=0>
+        <source src="https://abliu2.github.io/data/Apollo11.mp4" type="video/mp4" />
       </video>
       <svg class="chart" height=410></svg>
     </section>

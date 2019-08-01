@@ -78,6 +78,7 @@ function clear_chart() {
     CHART.selectAll("g.chapter-2-annotation").remove();
     CHART.selectAll("g.chapter-3-annotation").remove();
     CHART.selectAll("g.chapter-4-annotation").remove();
+    CHART.selectAll("g.chapter-2-fixed-annotation").remove();
 }
 
 function setup_chapter_1_transitions() {
@@ -195,7 +196,7 @@ function setup_chapter_1_chart(data) {
         });
     
     CHART.append("g").attr("class", "chapter-1-annotation").call(makeAnnotations);
-    CHART.selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
+    CHART.select("g.chapter-1-annotation").selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
 }
 
 function setup_chapter_2_chart(data) {
@@ -232,10 +233,67 @@ function setup_chapter_2_chart(data) {
                 .style("opacity", 1)
             annotation.type.a.selectAll("g.annotation-subject")
                 .style("opacity", 1);
+        })
+        .on("subjectout", (annotation) => {
+            annotation.type.a.selectAll("g.annotation-connector, g.annotation-note")
+                .style("opacity", 0);
+            annotation.type.a.selectAll("g.annotation-subject")
+                .style("opacity", 0);
+        });
 
-            if (parseInt(annotation.data.Year) === 1962) {
-                d3.select("#moon_speech_video").attr("height", 200).attr("width", 200)
-                  .style("transform", `translate(${CHART_WIDTH - 200}px, 0px)`);
+    const fixed_labels = [{
+        note: { label: "JFK Moon Speech" },
+        subject: {
+            y1: CHART_MARGINS.top + 50,
+            y2: CHART_HEIGHT + CHART_MARGINS.top,
+        },
+        y: CHART_MARGINS.top + 50,
+        data: { Year: 1962 },
+        className: "moon_speech_xythreshold",
+    }, {
+        data: {
+            Year: 1962,
+            NASA_BUDGET_OVER_GDP_IN_PERCENT: 0.21,
+        },
+        type: d3.annotationBadge,
+        subject: { radius: 4 },
+        className: "moon_speech_badge",
+    },{
+        note: { label: "Apollo 11 Mission" },
+        subject: {
+            y1: CHART_MARGINS.top + 50,
+            y2: CHART_HEIGHT + CHART_MARGINS.top,
+        },
+        y: CHART_MARGINS.top + 50,
+        data: { Year: 1969 },
+        className: "apollo_11_xythreshold",
+    }, {
+        data: {
+            Year: 1969,
+            NASA_BUDGET_OVER_GDP_IN_PERCENT: 0.42,
+        },
+        type: d3.annotationBadge,
+        subject: { radius: 4 },
+        className: "apollo_11_badge",
+    }];
+    const makeFixedAnnotations = d3.annotation()
+        .type(d3.annotationCustomType(d3.annotationXYThreshold, {
+            note: {
+                lineType: "none",
+                orientation: "top",
+                align: "middle",
+            }
+        }))
+        .accessors({
+            x: d => (X_fxn(d.Year) + CHART_MARGINS.left),
+            y: d => (Y_fxn(d.NASA_BUDGET_OVER_GDP_IN_PERCENT) + CHART_MARGINS.top),
+        })
+        .annotations(fixed_labels)
+        .textWrap(30)
+        .on("subjectover", (annotation) => {
+            if (annotation.className === "moon_speech_badge") {
+                d3.select("#moon_speech_video").attr("height", 300).attr("width", 400)
+                  .style("transform", `translate(${CHART_WIDTH - 400}px, 0px)`);
 
                 let video = document.getElementById("moon_speech_video");
                 let playPromise = video.play();
@@ -245,19 +303,17 @@ function setup_chapter_2_chart(data) {
             }
         })
         .on("subjectout", (annotation) => {
-            annotation.type.a.selectAll("g.annotation-connector, g.annotation-note")
-                .style("opacity", 0);
-            annotation.type.a.selectAll("g.annotation-subject")
-                .style("opacity", 0);
-            
-            d3.select("#moon_speech_video").attr("height", 0).attr("width", 0);
+            if (annotation.className === "moon_speech_badge") {
+                d3.select("#moon_speech_video").attr("height", 0).attr("width", 0);
 
-            let video = document.getElementById("moon_speech_video");
-            video.pause();
+                let video = document.getElementById("moon_speech_video");
+                video.pause();
+            }
         });
     
     CHART.append("g").attr("class", "chapter-2-annotation").call(makeAnnotations);
-    CHART.selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
+    CHART.append("g").attr("class", "chapter-2-fixed-annotation").call(makeFixedAnnotations);
+    CHART.select("g.chapter-2-annotation").selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
 }
 
 function setup_chapter_3_chart(data) {
@@ -303,7 +359,7 @@ function setup_chapter_3_chart(data) {
         });
     
     CHART.append("g").attr("class", "chapter-3-annotation").call(makeAnnotations);
-    CHART.selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
+    CHART.select("g.chapter-3-annotation").selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
 }
 
 function setup_chapter_4_chart(data) {
@@ -349,5 +405,5 @@ function setup_chapter_4_chart(data) {
         });
     
     CHART.append("g").attr("class", "chapter-4-annotation").call(makeAnnotations);
-    CHART.selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
+    CHART.select("g.chapter-4-annotation").selectAll("g.annotation-connector, g.annotation-note").style("opacity", 0);
 }
